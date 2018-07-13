@@ -1,8 +1,6 @@
 package com.ria.sofascore_bot;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -46,8 +44,11 @@ public class HTMLParser extends Application {
                                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                                 transformer.setOutputProperty("{https://www.sofascore.com/ru/tennis/livescore}", "4");
 
-                                transformer.transform(new DOMSource(doc),
-                                        new StreamResult(new OutputStreamWriter(new FileOutputStream(new File("C:\\Users\\wypik\\Desktop\\new 1.txt")), "UTF-8")));
+                                StringWriter writer = new StringWriter();
+                                StreamResult result = new StreamResult(writer);
+                                transformer.transform(new DOMSource(doc),result);
+                                String strResult = writer.toString();
+                                System.out.println(strResult);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -67,5 +68,9 @@ public class HTMLParser extends Application {
         timeline.play();
         
     }
+    
+    public static void main(String[] args) {
+		launch(args);
+	}
 
 }
