@@ -1,6 +1,7 @@
 package com.ria.sofascore_bot;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -8,6 +9,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.ria.sofascore_bot.models.Match;
 import org.w3c.dom.Document;
 
 import javafx.animation.KeyFrame;
@@ -48,7 +50,11 @@ public class HTMLParser extends Application {
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
-                                System.out.println(strResult);
+                                MatchBuilder matchBuilder = MatchBuilder.getInstance();
+                                ArrayList<Match> matches=matchBuilder.buildMatches(strResult);
+                                matches.forEach((x)->{
+                                    System.out.println(x.getTitle());
+                                });
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
