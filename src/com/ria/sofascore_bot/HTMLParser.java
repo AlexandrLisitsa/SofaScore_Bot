@@ -51,6 +51,7 @@ public class HTMLParser extends Application {
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
+                               // System.out.println(strResult);
                                 MatchBuilder matchBuilder = MatchBuilder.getInstance();
                                 ArrayList<Match> matches=matchBuilder.buildMatches(strResult);
                                 /*matches.forEach((x)->{

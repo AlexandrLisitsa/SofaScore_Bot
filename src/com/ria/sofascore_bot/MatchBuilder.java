@@ -65,7 +65,15 @@ public class MatchBuilder {
                 players.add(player);
             }
         });
+        getPlayersName(element,players);
         return players;
+    }
+
+    private void getPlayersName(Element element, ArrayList<Player> players) {
+        Elements aClass = element.getElementsByAttributeValue("class", "cell__content event-team  ");
+        for (int i = 0; i < aClass.size(); i++) {
+            players.get(i).setName(aClass.get(i).text());
+        }
     }
 
     private Team getTeam(Element element) {
@@ -82,7 +90,7 @@ public class MatchBuilder {
                 for (Node ch : nodes) {
                     List<Node> nodes1 = ch.childNodes();
                     nodes1.forEach(g -> {
-                        set.getSetScore().add(Integer.valueOf(g.toString()));
+                        if(!g.toString().contains("class")&&!g.toString().trim().isEmpty())set.getSetScore().add(Integer.valueOf(g.toString().trim()));
                     });
                 }
             }
@@ -117,7 +125,8 @@ public class MatchBuilder {
         Scanner scanner=null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-             scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\Новый текстовый документ.txt"));
+             //scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\Новый текстовый документ.txt"));
+            scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\error_step.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

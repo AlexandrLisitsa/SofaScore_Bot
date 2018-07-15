@@ -3,7 +3,8 @@ package com.ria.sofascore_bot.models;
 import java.util.ArrayList;
 
 public class Player {
-	
+
+	private String name;
 	private boolean isPitch;
 	private int score;
 	private Set sets = new Set();
@@ -26,5 +27,10 @@ public class Player {
 	public void setSets(Set sets) {
 		this.sets = sets;
 	}
-
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 }
