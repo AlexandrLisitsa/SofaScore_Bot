@@ -53,9 +53,9 @@ public class HTMLParser extends Application {
                                 String strResult = writer.toString();
                                 MatchBuilder matchBuilder = MatchBuilder.getInstance();
                                 ArrayList<Match> matches=matchBuilder.buildMatches(strResult);
-                                matches.forEach((x)->{
+                                /*matches.forEach((x)->{
                                     System.out.println(x.getTitle());
-                                });
+                                });*/
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }

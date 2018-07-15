@@ -34,7 +34,17 @@ public class MatchBuilder {
                     ArrayList<Player> tmpPlayer = getPlayer(elements.get(i));
                     ArrayList<Set> tmpSet = getSet(elements.get(i));
                     matches.add(tmpMatch);
-                    return matches;
+                    tmpSet.forEach(s->{
+                        s.getSetScore().forEach(ss->{
+                            System.out.print(ss+" ");
+                        });
+                        System.out.println();
+                    });
+                    tmpPlayer.forEach(p->{
+                        System.out.println(p.getScore()+" "+p.isPitch());
+                    });
+                   // return matches;
+                    System.out.println("_______");
                 }
             }
         }
@@ -44,8 +54,16 @@ public class MatchBuilder {
     private ArrayList<Player> getPlayer(Element element) {
 	    ArrayList<Player> players = new ArrayList<>();
         Elements aClass = element.getElementsByAttributeValue("class", "cell__section event-rounds__in-progress");
-        aClass.forEach(e->{
-            System.out.println(e.text());
+        Elements allElements = aClass.get(0).getAllElements();
+        allElements.forEach(e->{
+            if(e.hasClass("cell__content event-rounds__tennis-live ")||e.hasClass("cell__content event-rounds__tennis-live highlight")){
+                Player player = new Player();
+                if(e.text()!=""&&!e.text().isEmpty()) {
+                    player.setScore(Integer.parseInt(e.text()));
+                }
+                if(e.getAllElements().hasClass("soficons-tennis-ball"))player.setPitch(true);
+                players.add(player);
+            }
         });
         return players;
     }
