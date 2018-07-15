@@ -1,15 +1,17 @@
 package com.ria.sofascore_bot.models;
 
-public class Set {
-	
-	private int setScore;
+import java.util.ArrayList;
 
-	public int getSetScore() {
+public class Set {
+
+	public ArrayList<Integer> getSetScore() {
 		return setScore;
 	}
 
-	public void setSetScore(int setScore) {
+	public void setSetScore(ArrayList<Integer> setScore) {
 		this.setScore = setScore;
 	}
-	
+
+	private ArrayList<Integer> setScore = new ArrayList<>();
+
 }

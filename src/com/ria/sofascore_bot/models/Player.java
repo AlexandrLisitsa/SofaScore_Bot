@@ -6,7 +6,8 @@ public class Player {
 	
 	private boolean isPitch;
 	private int score;
-	private ArrayList<Set> sets = new ArrayList<>();
+	private Set sets = new Set();
+
 	public int getScore() {
 		return score;
 	}
@@ -19,11 +20,11 @@ public class Player {
 	public void setPitch(boolean isPitch) {
 		this.isPitch = isPitch;
 	}
-	public ArrayList<Set> getSets() {
+	public Set getSets() {
 		return sets;
 	}
-	public void setSets(ArrayList<Set> sets) {
+	public void setSets(Set sets) {
 		this.sets = sets;
 	}
-	
+
 }

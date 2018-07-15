@@ -28,6 +28,7 @@ public class HTMLParser extends Application {
 
 	
     public void start(Stage primaryStage) {
+
         WebView webview = new WebView();
         final WebEngine webengine = webview.getEngine();
         primaryStage.setOpacity(0);
@@ -67,14 +68,13 @@ public class HTMLParser extends Application {
         primaryStage.setTitle("sofascore_parser");
         primaryStage.show();
         KeyFrame keyFrame = new KeyFrame(Duration.millis(5000),e->{
-        	webengine.reload();
+            webengine.reload();
         });
         Timeline timeline = new Timeline(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-        
     }
-    
+
     public static void main(String[] args) {
 		launch(args);
 	}
