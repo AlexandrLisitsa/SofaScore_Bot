@@ -125,7 +125,6 @@ public class MatchBuilder {
         Scanner scanner=null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-             //scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\Новый текстовый документ.txt"));
             scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\error_step.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
