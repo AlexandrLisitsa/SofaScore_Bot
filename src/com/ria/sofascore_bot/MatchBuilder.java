@@ -2,138 +2,154 @@ package com.ria.sofascore_bot;
 
 import com.ria.sofascore_bot.models.*;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.*;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class MatchBuilder {
-	private static MatchBuilder instance;
-	private MatchBuilder() {};
-	public static MatchBuilder getInstance() {
-		if(instance==null) {
-			instance= new MatchBuilder();
-		}
-		return instance;
-	}
+    private static MatchBuilder instance;
+    private MatchBuilder() {};
+    public static MatchBuilder getInstance() {
+        if(instance==null) {
+            instance= new MatchBuilder();
+        }
+        return instance;
+    }
 
-	public ArrayList<Match> buildMatches(String document) {
-	    ArrayList<Match> matches = new ArrayList<>();
+    private ArrayList<Match> matches = new ArrayList<>();
+
+    public ArrayList<Match> buildMatches(String document) {
+
         Document document1 = Jsoup.parse(document);
         Elements elements = document1.getElementsByAttributeValue("class", "js-event-list-tournament tournament");
         if(elements.size() > 0) {
             for (int i = 0; i < elements.size(); i++) {
                 if(elements.get(i).getElementsByAttributeValue("class", "tournament__category").text().equals("ITF Мужчины")){
-                    Match tmpMatch = getMatches(elements.get(i));
-                    Game tmpGame = getGame(elements.get(i));
-                    Team tmpTeam = getTeam(elements.get(i));
-                    ArrayList<Player> tmpPlayer = getPlayer(elements.get(i));
-                    ArrayList<Set> tmpSet = getSet(elements.get(i));
+                    Match tmpMatch = getMatch(elements.get(i));
                     matches.add(tmpMatch);
-                    tmpSet.forEach(s->{
-                        s.getSetScore().forEach(ss->{
-                            System.out.print(ss+" ");
-                        });
-                        System.out.println();
-                    });
-                    tmpPlayer.forEach(p->{
-                        System.out.println(p.getName()+" "+p.getScore()+" "+p.isPitch());
-                    });
                     //return matches;
-                    System.out.println("_______");
                 }
             }
         }
         return matches;
-	}
+    }
 
-    private ArrayList<Player> getPlayer(Element element) {
-	    ArrayList<Player> players = new ArrayList<>();
-        Elements aClass = element.getElementsByAttributeValue("class", "cell__section event-rounds__in-progress");
-        Elements allElements = aClass.get(0).getAllElements();
-        allElements.forEach(e->{
-            if(e.hasClass("cell__content event-rounds__tennis-live ")||e.hasClass("cell__content event-rounds__tennis-live highlight")){
-                Player player = new Player();
-                if(e.text()!=""&&!e.text().isEmpty()) {
-                    player.setScore(Integer.parseInt(e.text()));
-                }
-                if(e.getAllElements().hasClass("soficons-tennis-ball"))player.setPitch(true);
-                players.add(player);
-            }
+    private Match getMatch(Element element) {
+        Match tmpMatch = new Match();
+        tmpMatch.setTitle(getMatchTitle(element));
+        tmpMatch.setGames(getMatchGames(element));
+        return tmpMatch;
+    }
+
+    private ArrayList<Game> getMatchGames(Element element) {
+        ArrayList<Game> games = new ArrayList<>();
+        Elements aClass1 = element.getElementsByAttributeValueContaining("class", "cell cell--event-list  pointer");
+        aClass1.forEach(x->{
+            Game game = new Game();
+            game.setTeams(getTeam(x));
+            games.add(game);
         });
-        //getPlayersName(element,players);
-        return players;
+
+        return games;
     }
 
-    private void getPlayersName(Element element, ArrayList<Player> players) {
-        Elements aClass = element.getElementsByAttributeValue("class", "cell__content event-team  ");
-        System.out.println(aClass.size()+"------------");
-        for (int i = 0; i < aClass.size(); i++) {
-            players.get(i).setName(aClass.get(i).text());
-        }
-    }
-
-    private Team getTeam(Element element) {
-	    return new Team();
-    }
-
-    private ArrayList<Set> getSet(Element element) {
-	    Set set = new Set();
-        Elements elementsByAttributeValue = element.getElementsByAttributeValue("class", "cell__section event-rounds event-rounds__live u-text-lighter");
-        for (Element x : elementsByAttributeValue) {
-            List<Node> cell_content = x.childNodes();
-            for (Node f : cell_content) {
-                List<Node> nodes = f.childNodes();
-                for (Node ch : nodes) {
-                    List<Node> nodes1 = ch.childNodes();
-                    nodes1.forEach(g -> {
-                        if(!g.toString().contains("class")&&!g.toString().trim().isEmpty())set.getSetScore().add(Integer.valueOf(g.toString().trim()));
+    private ArrayList<Team> getTeam(Element x) {
+        ArrayList<Team>teams = new ArrayList<>();
+        Elements elementsByAttributeValue = x.getElementsByAttributeValue("class", "cell__content");
+        elementsByAttributeValue.forEach(e->{
+            if(e.children().hasClass("event-rounds__tennis   ")){
+                Team team = new Team();
+                team.setPlayers(getPlayers(x));
+                if(teams.isEmpty()){
+                    teams.add(team);
+                }else {
+                    teams.forEach(t -> {
+                        t.getPlayers().forEach(p -> {
+                            if (!p.getName().equals(team.getPlayers().get(0).getName()) &&
+                                    !p.getName().equals(team.getPlayers().get(1).getName())) {
+                                teams.add(team);
+                            }
+                        });
                     });
                 }
             }
-        }
+        });
+        return teams;
+    }
+
+    private ArrayList<Player> getPlayers(Element x) {
+        ArrayList<Player> players = new ArrayList<>();
+        /*====name of player init*/
+        Elements aClass = x.getElementsByAttributeValue("class", "cell__content event-team  ");
+        aClass.forEach(e->{
+            Player tmp = new Player();
+            tmp.setName(e.text());
+            players.add(tmp);
+        });
+        /*=====set0 of player0 init*/
+        Set set0 = new Set();
+        Elements aClass1 = x.getElementsByAttributeValue("class", "cell__content");
+        aClass1.get(0).children().forEach(e->{
+            if(!e.text().isEmpty())set0.getSetScore().add(Integer.valueOf(e.text().substring(0,1)));
+        });
+        players.get(0).setSets(set0);
+        /*====set1 of player1 init*/
         Set set1 = new Set();
-        Set set2 = new Set();
-        for (int i = 0; i < set.getSetScore().size(); i++) {
-            if(i<(set.getSetScore().size()+1)/2){
-                set1.getSetScore().add(set.getSetScore().get(i));
-            }else{
-                set2.getSetScore().add(set.getSetScore().get(i));
-            }
-        }
-        ArrayList<Set> returnedList = new ArrayList<>();
-        returnedList.add(set1);
-        returnedList.add(set2);
-        return returnedList;
+        Elements aClass2 = x.getElementsByAttributeValue("class", "cell__content");
+        aClass2.get(1).children().forEach(e->{
+            if(!e.text().isEmpty())set1.getSetScore().add(Integer.valueOf(e.text().substring(0,1)));
+        });
+        players.get(1).setSets(set1);
+        /*=======Player live Scores*/
+        Elements liveScores = x.getElementsByAttributeValueContaining("class", "cell__content event-rounds__tennis-live ");
+        if(liveScores.get(0).children().hasClass("soficons-tennis-ball"))players.get(0).setPitch(true);
+        players.get(0).setScore(Integer.parseInt(liveScores.get(0).text()));
+        if(liveScores.get(1).children().hasClass("soficons-tennis-ball"))players.get(1).setPitch(true);
+        players.get(1).setScore(Integer.parseInt(liveScores.get(1).text()));
+
+        return players;
     }
 
-    private Game getGame(Element element) {
-	    return new Game();
+    private String getMatchTitle(Element element) {
+        return element.getElementsByAttributeValue("class","tournament__name").text();
     }
 
-    private Match getMatches(Element element) {
-	    Match tmp = new Match();
-	    tmp.setTitle(element.getElementsByAttributeValue("class","tournament__name").text());
-	    return tmp;
-    }
 
     public static void main(String[] args) {
         MatchBuilder matchBuilder = MatchBuilder.getInstance();
         Scanner scanner=null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            scanner = new Scanner(new File("C:\\Users\\wypik\\Desktop\\error_total.txt"));
+            //scanner = new Scanner(new File("C:\\Users\\wypik\\Desktop\\error_total.txt"));
+            scanner = new Scanner(new File("C:\\Users\\wypik\\Desktop\\WORK.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         while (scanner.hasNext()){
             stringBuilder.append(scanner.nextLine());
         }
-        matchBuilder.buildMatches(stringBuilder.toString());
+        ArrayList<Match> matches = matchBuilder.buildMatches(stringBuilder.toString());
+        matches.forEach(m->{
+            System.out.println(m.getTitle());
+            m.getGames().forEach(e->{
+                e.getTeams().forEach(x->{
+                    x.getPlayers().forEach(p->{
+                        System.out.print(p.getName()+"      ");
+                        p.getSets().getSetScore().forEach(s->{
+                            System.out.print(s+" ");
+                        });
+                        System.out.println("    Scores  "+p.getScore()+"           is pitch        "+p.isPitch());
+                    });
+                });
+            });
+            System.out.println();
+        });
+
     }
 
 }
