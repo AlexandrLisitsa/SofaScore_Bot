@@ -20,7 +20,7 @@ public class MatchBuilder {
 		}
 		return instance;
 	}
-	
+
 	public ArrayList<Match> buildMatches(String document) {
 	    ArrayList<Match> matches = new ArrayList<>();
         Document document1 = Jsoup.parse(document);
@@ -41,9 +41,9 @@ public class MatchBuilder {
                         System.out.println();
                     });
                     tmpPlayer.forEach(p->{
-                        System.out.println(p.getScore()+" "+p.isPitch());
+                        System.out.println(p.getName()+" "+p.getScore()+" "+p.isPitch());
                     });
-                   // return matches;
+                    //return matches;
                     System.out.println("_______");
                 }
             }
@@ -65,12 +65,13 @@ public class MatchBuilder {
                 players.add(player);
             }
         });
-        getPlayersName(element,players);
+        //getPlayersName(element,players);
         return players;
     }
 
     private void getPlayersName(Element element, ArrayList<Player> players) {
         Elements aClass = element.getElementsByAttributeValue("class", "cell__content event-team  ");
+        System.out.println(aClass.size()+"------------");
         for (int i = 0; i < aClass.size(); i++) {
             players.get(i).setName(aClass.get(i).text());
         }
@@ -125,7 +126,7 @@ public class MatchBuilder {
         Scanner scanner=null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            scanner = new Scanner(new File("C:\\Users\\WyPik\\Desktop\\error_step.txt"));
+            scanner = new Scanner(new File("C:\\Users\\wypik\\Desktop\\error_total.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
