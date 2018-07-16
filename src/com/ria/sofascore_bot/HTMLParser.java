@@ -51,12 +51,10 @@ public class HTMLParser extends Application {
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
-                                System.out.println(strResult);
+                                //System.out.println(strResult);
                                 MatchBuilder matchBuilder = MatchBuilder.getInstance();
                                 ArrayList<Match> matches=matchBuilder.buildMatches(strResult);
-                                /*matches.forEach((x)->{
-                                    System.out.println(x.getTitle());
-                                });*/
+                                showMatches(matches);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -74,6 +72,24 @@ public class HTMLParser extends Application {
         Timeline timeline = new Timeline(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+
+    private void showMatches(ArrayList<Match> matches) {
+        matches.forEach(m->{
+            System.out.println(m.getTitle());
+            m.getGames().forEach(e->{
+                e.getTeams().forEach(x->{
+                    x.getPlayers().forEach(p->{
+                        System.out.print(p.getName()+"      ");
+                        p.getSets().getSetScore().forEach(s->{
+                            System.out.print(s+" ");
+                        });
+                        System.out.println("    Scores  "+p.getScore()+"           is pitch        "+p.isPitch());
+                    });
+                });
+            });
+            System.out.println();
+        });
     }
 
     public static void main(String[] args) {

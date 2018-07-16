@@ -21,10 +21,10 @@ public class MatchBuilder {
         return instance;
     }
 
-    private ArrayList<Match> matches = new ArrayList<>();
+
 
     public ArrayList<Match> buildMatches(String document) {
-
+        ArrayList<Match> matches = new ArrayList<>();
         Document document1 = Jsoup.parse(document);
         Elements elements = document1.getElementsByAttributeValue("class", "js-event-list-tournament tournament");
         if(elements.size() > 0) {
